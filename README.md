@@ -1,4 +1,4 @@
-# DataStax Enterprise Cassandra in Docker
+# DataStax Enterprise 5.0 in Docker
 
 ## Introduction
 
