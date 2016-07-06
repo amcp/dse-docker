@@ -1,35 +1,13 @@
-FROM ubuntu
+FROM nimmis/java:oracle-8-jdk
 
 #install dependencies
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y apt-transport-https \
-  curl \
-  ifupdown \
-  iproute2 \
-  isc-dhcp-client \
-  isc-dhcp-common \
   libatm1 \
-  libdns-export162 \
-  libgdbm3 \
-  libisc-export160 \
   libmnl0 \
   libopts25 \
-  libperl5.22 \
-  libpython-stdlib \
-  libpython2.7-minimal \
-  libpython2.7-stdlib \
-  libxtables11 \
-  netbase \
-  ntp \
-  openjdk-8-jdk \
-  perl \
-  perl-modules-5.22 \
-  python \
-  python-minimal \
-  python2.7 \
-  python2.7-minimal \
-  rename
+  ntp
 
 #add datastax repository file
 ARG DSA_EMAIL
@@ -45,6 +23,9 @@ RUN apt-get update -y
 #install dse and demos
 RUN apt-get install -y dse-full=5.0.0-1 dse-demos
 
+#install datastax studio
+RUN curl --user ${DSA_EMAIL}:${DSA_PASSWORD} -L https://downloads.datastax.com/datastax-studio/datastax-studio.tar.gz | tar xz
+
 # Expose ports:
 # Cassandra
 # Solr (assuming DSE Max)
@@ -52,12 +33,19 @@ RUN apt-get install -y dse-full=5.0.0-1 dse-demos
 # Hadoop (assuming DSE Max)
 # Hive/Shark
 # OpsCenter agent
+# Studio
 
 EXPOSE 7000 9042 9160 \
        8983 8984 \
        4040 7080 7081 7077 \
        8012 50030 50060 9290 \
        10000 \
-       61621
+       61621 \
+       9091
 
-CMD /bin/bash
+RUN sed -i '/GRAPH_ENABLED=0/c\GRAPH_ENABLED=1' /etc/default/dse
+RUN sed -i '/SOLR_ENABLED=0/c\SOLR_ENABLED=1' /etc/default/dse
+RUN sed -i '/httpBindAddress/c\\ httpBindAddress:\ 0.0.0.0' /root/datastax-studio-1.0.0/conf/configuration.yaml
+ADD kickstartOneNodeCluster.sh /kickstart.sh
+RUN chmod a+x /kickstart.sh
+CMD /kickstart.sh
