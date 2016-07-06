@@ -14,4 +14,4 @@ Here, DSA stands for DataStax Academy.
 
 Start Studio on top of the single-node cluster in a Docker container: ```docker run --privileged=true -t -i --name node1 -d -p 127.0.0.1:9091:9091 dse/docker```
 
-Finally, navigate to the [DataStax Studio endpoint](http://localhost:9091) and choose one or both of the tutorials to explore DSE Graph.
+Finally, navigate to the [DataStax Studio endpoint](http://localhost:9091) and choose one or both of the tutorials to explore the features of DSE Graph.
